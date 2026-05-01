@@ -1,0 +1,8 @@
+dataset.zip
+dataset/
+dataset_extracted/
+dataset_test
+dr_fedavg_model.h5
+dr_fedavg_model.h5.backup
+code/dr_webapp
+venv
