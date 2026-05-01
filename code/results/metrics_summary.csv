@@ -1,0 +1,21 @@
+Metric,Value
+Accuracy,0.965
+Precision,0.9428571428571428
+Recall,0.99
+F1-Score,0.9658536585365853
+Balanced Accuracy,0.965
+AUC-ROC,0.9948999999999999
+AUC-PR,0.9956821544689186
+Matthews Correlation Coefficient,0.9311646842384714
+Cohen's Kappa,0.9299999999999999
+TP,99.0
+TN,94.0
+FP,6.0
+FN,1.0
+Sensitivity,0.99
+Specificity,0.94
+Positive Predictive Value (PPV),0.9428571428571428
+Negative Predictive Value (NPV),0.9894736842105263
+False Positive Rate,0.06
+False Negative Rate,0.01
+Youden's Index,0.9299999999999999
