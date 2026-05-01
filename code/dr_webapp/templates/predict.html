@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+{% block title %}Diagnose{% endblock %}
+
+{% block content %}
+<div class="container page-header">
+  <h1>Run Diagnosis</h1>
+  <p class="text-muted">Upload a fundus retinal photograph to detect Diabetic Retinopathy.</p>
+</div>
+
+<div class="container predict-layout">
+  <!-- Upload Card -->
+  <div class="card predict-upload">
+    <h2>Upload Image</h2>
+    <form method="POST" enctype="multipart/form-data" id="uploadForm">
+      <div class="dropzone" id="dropzone">
+        <input type="file" name="image" id="imageInput" accept=".jpg,.jpeg,.png,.bmp,.tiff" required>
+        <div class="dropzone__inner" id="dropzoneInner">
+          <div class="dropzone__icon">◉</div>
+          <p class="dropzone__text">Drop retinal image here or <span class="link">browse</span></p>
+          <p class="dropzone__hint">JPG, PNG, BMP, TIFF — max 16 MB</p>
+        </div>
+        <img id="preview" src="" alt="Preview" class="dropzone__preview hidden">
+      </div>
+
+      <div class="form-group" style="margin-top:1.5rem;">
+        <button type="submit" class="btn btn--full btn--lg" id="submitBtn">
+          Analyze Image →
+        </button>
+      </div>
+    </form>
+
+    <div class="predict-info">
+      <h3>Model Info</h3>
+      <ul class="info-list">
+        <li><span>Backbone</span><strong>FedAlg</strong></li>
+        <li><span>Algorithm</span><strong>FedAvg FL</strong></li>
+        <li><span>Input Size</span><strong>224 × 224</strong></li>
+        <li><span>Classes</span><strong>DR / No_DR</strong></li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- Result Card -->
+  {% if result %}
+  <div class="card predict-result {% if result.label == 'DR' %}predict-result--danger{% else %}predict-result--success{% endif %}">
+    <div class="result-header">
+      <div class="result-icon">{% if result.label == 'DR' %}⚠️{% else %}✅{% endif %}</div>
+      <div>
+        <h2 class="result-label">{{ result.label }}</h2>
+        <p class="result-conf">{{ result.confidence }}% confidence</p>
+      </div>
+    </div>
+
+    <img src="{{ result.image_data }}" alt="Uploaded retina" class="result-img">
+
+    <!-- Probability Bars -->
+    <div class="prob-bars">
+      <div class="prob-bar">
+        <div class="prob-bar__label">
+          <span>DR (Positive)</span>
+          <strong>{{ result.dr_prob }}%</strong>
+        </div>
+        <div class="prob-bar__track">
+          <div class="prob-bar__fill prob-bar__fill--red" style="width:{{ result.dr_prob }}%"></div>
+        </div>
+      </div>
+      <div class="prob-bar">
+        <div class="prob-bar__label">
+          <span>No DR (Healthy)</span>
+          <strong>{{ result.no_dr_prob }}%</strong>
+        </div>
+        <div class="prob-bar__track">
+          <div class="prob-bar__fill prob-bar__fill--green" style="width:{{ result.no_dr_prob }}%"></div>
+        </div>
+      </div>
+    </div>
+
+    <p class="result-disclaimer">
+      ⚕️ This AI result is for clinical assistance only. Always consult a qualified ophthalmologist for a definitive diagnosis.
+    </p>
+    <a href="{{ url_for('predict') }}" class="btn" style="margin-top:1rem;">Analyze Another →</a>
+  </div>
+  {% else %}
+  <div class="card predict-placeholder">
+    <div class="placeholder-inner">
+      <div class="placeholder-rings">
+        <div class="p-ring p-ring--1"></div>
+        <div class="p-ring p-ring--2"></div>
+        <div class="p-ring p-ring--3"></div>
+        <span>◉</span>
+      </div>
+      <p>Your result will appear here after analysis.</p>
+    </div>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,90 @@
+{% extends 'base.html' %}
+{% block title %}Dashboard{% endblock %}
+
+{% block content %}
+<div class="container page-header">
+  <h1>Dashboard</h1>
+  <p class="text-muted">Hello, <strong>{{ session.user_name }}</strong> — here's your overview.</p>
+</div>
+
+<div class="container">
+  <!-- Stats Cards -->
+  <div class="cards-row">
+    <div class="card card--stat">
+      <div class="card__icon card__icon--blue">🔬</div>
+      <div>
+        <div class="card__num">{{ total }}</div>
+        <div class="card__label">Total Diagnoses</div>
+      </div>
+    </div>
+    <div class="card card--stat">
+      <div class="card__icon card__icon--red">⚠️</div>
+      <div>
+        <div class="card__num">{{ dr_count }}</div>
+        <div class="card__label">DR Detected</div>
+      </div>
+    </div>
+    <div class="card card--stat">
+      <div class="card__icon card__icon--green">✅</div>
+      <div>
+        <div class="card__num">{{ total - dr_count }}</div>
+        <div class="card__label">No DR Found</div>
+      </div>
+    </div>
+    <div class="card card--stat card--action">
+      <a href="{{ url_for('predict') }}" class="btn btn--lg" style="width:100%;text-align:center;">
+        + New Diagnosis
+      </a>
+    </div>
+  </div>
+
+  <!-- Recent predictions -->
+  <div class="card" style="margin-top:2rem;">
+    <div class="card__header">
+      <h2>Recent Diagnoses</h2>
+      <a href="{{ url_for('analytics') }}" class="link">View All →</a>
+    </div>
+
+    {% if recent %}
+    <div class="table-wrap">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>File</th>
+            <th>Label</th>
+            <th>Confidence</th>
+            <th>DR Prob</th>
+            <th>No_DR Prob</th>
+            <th>Date</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for p in recent %}
+          <tr>
+            <td>{{ p.id }}</td>
+            <td class="td-file">{{ p.filename | truncate(25) }}</td>
+            <td>
+              <span class="badge {% if p.label == 'DR' %}badge--danger{% else %}badge--success{% endif %}">
+                {{ p.label }}
+              </span>
+            </td>
+            <td>{{ p.confidence | round(1) }}%</td>
+            <td>{{ p.dr_prob | round(1) }}%</td>
+            <td>{{ p.no_dr_prob | round(1) }}%</td>
+            <td class="td-date">{{ p.created[:16] }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+      <div class="empty-state">
+        <div class="empty-state__icon">◉</div>
+        <p>No diagnoses yet. Upload your first retinal image.</p>
+        <a href="{{ url_for('predict') }}" class="btn">Run First Diagnosis →</a>
+      </div>
+    {% endif %}
+  </div>
+</div>
+{% endblock %}

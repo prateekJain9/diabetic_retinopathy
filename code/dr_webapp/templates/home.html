@@ -1,0 +1,117 @@
+{% extends 'base.html' %}
+{% block title %}Home{% endblock %}
+
+{% block content %}
+<!-- Hero -->
+<section class="hero">
+  <div class="hero__bg"></div>
+  <div class="hero__content">
+    <span class="hero__tag">Federated Learning · MobileNetV2 · FedAvg</span>
+    <h1 class="hero__title">Early Detection<br><em>Saves Sight.</em></h1>
+    <p class="hero__sub">RetinaAI uses a privacy-preserving federated model trained across distributed data to detect Diabetic Retinopathy from fundus photographs — in seconds.</p>
+    <div class="hero__actions">
+      {% if session.get('user_id') %}
+        <a href="{{ url_for('predict') }}" class="btn btn--lg">Run Diagnosis →</a>
+        <a href="{{ url_for('analytics') }}" class="btn btn--ghost">View Analytics</a>
+      {% else %}
+        <a href="{{ url_for('register') }}" class="btn btn--lg">Start for Free →</a>
+        <a href="{{ url_for('login') }}" class="btn btn--ghost">Login</a>
+      {% endif %}
+    </div>
+  </div>
+  <div class="hero__visual">
+    <div class="retina-ring retina-ring--1"></div>
+    <div class="retina-ring retina-ring--2"></div>
+    <div class="retina-ring retina-ring--3"></div>
+    <div class="retina-eye">◉</div>
+  </div>
+</section>
+
+<!-- How it works -->
+<section class="section">
+  <div class="container">
+    <h2 class="section__title">How It Works</h2>
+    <div class="steps">
+      <div class="step">
+        <div class="step__num">01</div>
+        <h3>Upload Retinal Image</h3>
+        <p>Upload a fundus photograph in JPG, PNG, or TIFF format from your ophthalmologic device.</p>
+      </div>
+      <div class="step__arrow">→</div>
+      <div class="step">
+        <div class="step__num">02</div>
+        <h3>AI Analysis</h3>
+        <p>Our MobileNetV2 CNN backbone trained via FedAvg federated learning analyzes the image at 224×224 resolution.</p>
+      </div>
+      <div class="step__arrow">→</div>
+      <div class="step">
+        <div class="step__num">03</div>
+        <h3>Instant Result</h3>
+        <p>Receive DR / No_DR classification with confidence scores and probability breakdown within seconds.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Stats -->
+<section class="section section--dark">
+  <div class="container">
+    <div class="stats">
+      <div class="stat">
+        <div class="stat__num">224×224</div>
+        <div class="stat__label">Input Resolution</div>
+      </div>
+      <div class="stat">
+        <div class="stat__num">FedAvg</div>
+        <div class="stat__label">Training Algorithm</div>
+      </div>
+      <div class="stat">
+        <div class="stat__num">2</div>
+        <div class="stat__label">Classes Detected</div>
+      </div>
+      <div class="stat">
+        <div class="stat__num">Privacy</div>
+        <div class="stat__label">Data Never Leaves Client</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Features -->
+<section class="section">
+  <div class="container">
+    <h2 class="section__title">Why RetinaAI</h2>
+    <div class="features">
+      <div class="feature">
+        <div class="feature__icon">🔒</div>
+        <h3>Privacy-First</h3>
+        <p>Federated learning ensures patient images never leave their source — only model weights are shared.</p>
+      </div>
+      <div class="feature">
+        <div class="feature__icon">⚡</div>
+        <h3>Instant Results</h3>
+        <p>Real-time inference via a compressed MobileNetV2 backbone optimised for edge deployment.</p>
+      </div>
+      <div class="feature">
+        <div class="feature__icon">📊</div>
+        <h3>Full Analytics</h3>
+        <p>Track your diagnosis history, confidence trends, and DR/No_DR ratios in an interactive dashboard.</p>
+      </div>
+      <div class="feature">
+        <div class="feature__icon">🧠</div>
+        <h3>Deep Learning</h3>
+        <p>Transfer learning from ImageNet + custom classification head trained on retinal fundus images.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="section section--cta">
+  <div class="container" style="text-align:center;">
+    <h2>Ready to diagnose?</h2>
+    <p style="color:var(--text-muted);margin-bottom:2rem;">Create a free account and run your first analysis in under 60 seconds.</p>
+    <a href="{{ url_for('register') }}" class="btn btn--lg">Create Free Account →</a>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,171 @@
+{% extends 'base.html' %}
+{% block title %}Analytics{% endblock %}
+
+{% block content %}
+<div class="container page-header">
+  <h1>Analytics</h1>
+  <p class="text-muted">Your full diagnosis history and statistics.</p>
+</div>
+
+<div class="container">
+  <!-- Summary Cards -->
+  <div class="cards-row">
+    <div class="card card--stat">
+      <div class="card__icon card__icon--blue">📊</div>
+      <div>
+        <div class="card__num">{{ total }}</div>
+        <div class="card__label">Total Scans</div>
+      </div>
+    </div>
+    
+    <div class="card card--stat">
+      <div class="card__icon card__icon--red">⚠️</div>
+      <div>
+        <div class="card__num">{{ dr_count }}</div>
+        <div class="card__label">DR Positive</div>
+      </div>
+    </div>
+    <div class="card card--stat">
+      <div class="card__icon card__icon--green">✅</div>
+      <div>
+        <div class="card__num">{{ no_dr_count }}</div>
+        <div class="card__label">No DR</div>
+      </div>
+    </div>
+    <div class="card card--stat">
+      <div class="card__icon card__icon--yellow">🎯</div>
+      <div>
+        <div class="card__num">{{ avg_conf }}%</div>
+        <div class="card__label">Avg Confidence</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Charts Row -->
+  {% if total > 0 %}
+  <div class="charts-row">
+    <!-- Activity chart -->
+    <div class="card" style="flex:2">
+      <div class="card__header"><h2>Daily Scan Activity (7 Days)</h2></div>
+      <canvas id="activityChart" height="120"></canvas>
+    </div>
+    <!-- Donut -->
+    <div class="card" style="flex:1">
+      <div class="card__header"><h2>DR Distribution</h2></div>
+      <canvas id="donutChart" height="180"></canvas>
+    </div>
+  </div>
+  {% endif %}
+
+  <!-- History Table -->
+  <div class="card" style="margin-top:2rem;">
+    <div class="card__header">
+      <h2>Full History</h2>
+      <span class="text-muted">{{ total }} records</span>
+    </div>
+
+    {% if predictions %}
+    <div class="table-wrap">
+      <table class="table">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>File</th>
+            <th>Label</th>
+            <th>Confidence</th>
+            <th>DR%</th>
+            <th>No_DR%</th>
+            <th>Date & Time</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for p in predictions %}
+          <tr>
+            <td>{{ p.id }}</td>
+            <td class="td-file">{{ p.filename | truncate(28) }}</td>
+            <td>
+              <span class="badge {% if p.label == 'DR' %}badge--danger{% else %}badge--success{% endif %}">
+                {{ p.label }}
+              </span>
+            </td>
+            <td>
+              <div class="mini-bar">
+                <div class="mini-bar__fill" style="width:{{ p.confidence | round }}%"></div>
+                <span>{{ p.confidence | round(1) }}%</span>
+              </div>
+            </td>
+            <td>{{ p.dr_prob | round(1) }}%</td>
+            <td>{{ p.no_dr_prob | round(1) }}%</td>
+            <td class="td-date">{{ p.created[:16] }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div class="empty-state">
+      <div class="empty-state__icon">◉</div>
+      <p>No predictions yet.</p>
+      <a href="{{ url_for('predict') }}" class="btn">Run First Diagnosis →</a>
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+{% if total > 0 %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script>
+  const days        = {{ days | tojson }};
+  const dayCounts   = {{ day_counts | tojson }};
+  const drCount     = {{ dr_count }};
+  const noDrCount   = {{ no_dr_count }};
+
+  // Activity Line Chart
+  const actCtx = document.getElementById('activityChart').getContext('2d');
+  new Chart(actCtx, {
+    type: 'bar',
+    data: {
+      labels: days,
+      datasets: [{
+        label: 'Scans',
+        data: dayCounts,
+        backgroundColor: 'rgba(91, 143, 249, 0.5)',
+        borderColor: '#5B8FF9',
+        borderWidth: 2,
+        borderRadius: 6
+      }]
+    },
+    options: {
+      responsive: true,
+      plugins: { legend: { display: false } },
+      scales: {
+        y: { beginAtZero: true, ticks: { stepSize: 1 }, grid: { color: 'rgba(255,255,255,0.05)' } },
+        x: { grid: { display: false } }
+      }
+    }
+  });
+
+  // Donut
+  const doCtx = document.getElementById('donutChart').getContext('2d');
+  new Chart(doCtx, {
+    type: 'doughnut',
+    data: {
+      labels: ['DR', 'No DR'],
+      datasets: [{
+        data: [drCount, noDrCount],
+        backgroundColor: ['#e74c3c', '#2ecc71'],
+        borderWidth: 0,
+        hoverOffset: 8
+      }]
+    },
+    options: {
+      responsive: true,
+      cutout: '68%',
+      plugins: {
+        legend: { position: 'bottom', labels: { color: '#c8cdd8', padding: 16 } }
+      }
+    }
+  });
+</script>
+{% endif %}
+{% endblock %}
